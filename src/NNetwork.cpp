@@ -9,21 +9,30 @@ int NNetwork::addNode()
     return nid;
 }
 
+NNetwork::~NNetwork()
+{
+    /*int len = mNet.size();
+    for (int i=0; i<len; i++)
+    {
+        delete mNet[i];
+    }*/
+}
+
 void NNetwork::connect(int a, int b, fptype w)
 {
     // if there's no connection between a and b,
     // connect a and b
+    // (connect does not change existing connections)
     if (getWeight(a, b, w))
         setWeight(a, b, w);
 }
 
 fptype NNetwork::getWeight(int a, int b) const;
 {
-    // weight between a node and itself is invalid
+    // weight between a node and itself is 0
     if (a == b)
-        return std::numeric_limits<fptype>::quiet_NaN();
-    Node b_node = mNet[b];
-    int len = b_node.inputs.size();
+        return 0;
+    int len = mNet[b]->inputs.size();
     for (int i=0; i<len; i++)
     {
         if (mNet[b].inputs[i]->id == a)
@@ -31,10 +40,8 @@ fptype NNetwork::getWeight(int a, int b) const;
             return mNet[b].weights[i];
         }
     }
-    // NaN means no connection
-    // Note: this assumes the availability of 
-    // a NaN on the target system
-    return std::numeric_limits<fptype>::quiet_NaN(); 
+    // 0 means no connection
+    return 0;
 }
 
 void NNetwork::setWeight(int a, int b, fptype w)
@@ -53,7 +60,21 @@ void NNetwork::setWeight(int a, int b, fptype w)
     }
     // if a and b are not connected,
     // create a new connection between them
-    mNet[b].inputs.push_back(mNet[a]);
+    mNet[b].inputs.push_back(&mNet[a]);
     mNet[b].weights.push_back(w);
 }
 
+fptype NNetwork::read(int a) const
+{
+    return mNet[a].getOutput();
+}
+
+void NNetwork::setOutputNode(int a)
+{
+    mOutputNode = a;
+}
+
+fptype NNetwork::getOutput() const
+{
+    return read(mOutputNode);
+}
