@@ -7,9 +7,9 @@ class FFNet : public NNetwork
 {
     public:
         // constructor for a 3-layer FF Network
-        FFNet(nInput, nHidden, nOutput);
-        setWeight(const NodeAddr &a, const NodeAddr &b);
-        getWeight(const NodeAddr &a, const NodeAddr &b);
+        FFNet(int nInput,int nHidden,int nOutput);
+        void setWeight(const NodeAddr &a, const NodeAddr &b, fptype w);
+        fptype getWeight(const NodeAddr &a, const NodeAddr &b);
         struct NodeAddr
         {
             NodeAddr(int tnid, tlayer, tlayerPos)
@@ -17,7 +17,28 @@ class FFNet : public NNetwork
             int nid;
             int layer;
             int layerPos;
-        }
+        };
+        struct Layer
+        {
+            Layer(int n):nodes(n) 
+            {
+                mLayerId = mLayerCount;
+                mLayerCount++;     
+            }
+            NodeAddr addNeuron()
+            {
+                int nid = addNode();
+                nids.push_back(nid);
+                return NodeAddr(nid, mLayerId, nids.size()-1);  
+            }
+            int size()
+            {
+                return nids.size();
+            }
+            vector <int> nids;
+            int mLayerId;
+            static int mLayerCount = 0;
+        };
     private:
         FFNet();
 };
