@@ -36,9 +36,16 @@ class NNetwork
         int mOutputNode;
         struct Neuron
         {
-            Neuron(int nid) : id(nid) {}
+            Neuron(int nid) : id(nid), mIsInput(0) {}
+            void setInput(int val)
+            {
+                mVal = val;
+                mIsInput = 1;
+            }
             fptype getOutput()
             {
+                if (mIsInput)
+                    return mVal;
                 float sum = 0;
                 int len = inputs.size();
                 for (int i=0; i<len; i++)
@@ -48,6 +55,8 @@ class NNetwork
             vector <Neuron *> inputs;
             vector <fptype> weights;
             int id;
+            int mVal;
+            char mIsInput;
             private:
                 // no default constructor!
                 Neuron() {};

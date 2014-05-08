@@ -39,6 +39,7 @@ class FFNet : public NNetwork
             int mLayerId;
             static int mLayerCount = 0;
         };
+        vector <Layer> layers;
     private:
         FFNet();
 };
